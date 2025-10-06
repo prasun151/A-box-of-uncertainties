@@ -45,7 +45,7 @@
             text-align: center;
             padding: 1rem;
             width: 100%;
-            min-height: 100vh; /* Ensures full viewport height for vertical centering on mobile */
+            min-height: 100vh; /* Ensures full viewport height for vertical centering */
             overflow-x: hidden; /* Prevent horizontal scroll */
         }
         
@@ -136,10 +136,8 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-             /* --- FIX FOR CENTERING --- */
             display: flex;
             flex-direction: column;
-            justify-content: center;
             /* Hide scrollbar for a cleaner look but allow scrolling */
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -153,6 +151,7 @@
             font-size: clamp(1.5rem, 5vw, 2rem);
             margin-bottom: 1.5rem;
             text-align: center;
+            margin-top: auto; /* This helps center short poems vertically */
         }
         
         .modal-content p {
@@ -161,6 +160,7 @@
             line-height: 1.8;
             color: var(--subtitle-color);
             text-align: center; /* Centers the poem text */
+            margin-bottom: auto; /* This helps center short poems vertically */
         }
 
     </style>
@@ -366,7 +366,7 @@ The culprit that leads on towards the path of misery…
 A double edged sword…
 
 “One is but a hollow void”
-It's our tendencies that ceases the nullity within the void…
+It's our tendencies that ceases a nullity within the void…
 The connections one makes along that atrocious yet beautiful path is the only motive…
 
 The concept of misery and pessimistic outlook is not everyone’s cup of tea…
