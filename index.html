@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Box of Uncertainties</title>
+    
+    <!-- Google Fonts: Roboto Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* * ----------------------------------------
+         * BASIC RESET & GLOBAL STYLES
+         * ----------------------------------------
+         */
+        :root {
+            --background-color: #000000;
+            --text-color: #FFFFFF;
+            --subtitle-color: #D1D5DB; 
+            --hover-color: #9CA3AF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        /* * ----------------------------------------
+         * MAIN CONTENT & POEM LIST
+         * ----------------------------------------
+         */
+        .content-container {
+            max-width: 48rem; /* max-w-3xl */
+            width: 100%;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 3rem); /* Responsive font size */
+            font-weight: 700;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        h1:hover {
+            color: var(--hover-color);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 4vw, 1.25rem);
+            font-weight: 300;
+            color: var(--subtitle-color);
+            margin-top: -1.5rem; /* Pulls it closer to the main title */
+            margin-bottom: 2.5rem;
+            padding: 0 1rem; /* Ensures it doesn't touch screen edges on mobile */
+        }
+
+        #poem-list {
+            list-style: none;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        
+        #poem-list.visible {
+            max-height: 500px; /* Adjust as needed */
+        }
+
+        #poem-list li {
+            margin: 1.5rem 0;
+            font-size: clamp(1rem, 4vw, 1.25rem); /* Responsive font size */
+            font-weight: 300;
+            cursor: pointer;
+            color: var(--subtitle-color);
+            transition: color 0.3s ease;
+        }
+
+        #poem-list li:hover {
+            color: var(--text-color);
+        }
+
+        /* * ----------------------------------------
+         * POEM MODAL (OVERLAY)
+         * ----------------------------------------
+         */
+        #poem-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            padding: 2rem;
+            z-index: 1000;
+        }
+
+        #poem-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            max-width: 42rem; /* max-w-2xl */
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            text-align: left;
+            position: relative;
+            /* Hide scrollbar for a cleaner look but allow scrolling */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .modal-content::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        
+        .modal-content h2 {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .modal-content p {
+            white-space: pre-wrap; /* Preserves line breaks in the poem */
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            line-height: 1.8;
+            color: var(--subtitle-color);
+            text-align: center; /* Centers the poem text */
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="content-container">
+        
+        <h1 id="main-title">A Box of Uncertainties</h1>
+        <p class="subtitle">A collection of freshly baked feels from a midnight pondering session</p>
+        
+        <ul id="poem-list">
+            <li data-poem="poem1">500 days of autumn</li>
+            <li data-poem="poem2">Vinland</li>
+            <li data-poem="poem3">I'm lucky to love you</li>
+            <li data-poem="poem4">A tiny happenstance</li>
+            <li data-poem="poem5">A mist of lucidity</li>
+        </ul>
+
+    </main>
+
+    <!-- The Modal for displaying the poem -->
+    <div id="poem-modal">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-body"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- POEM CONTENT ---
+        // You can replace these with your actual poems.
+        // The `\n` creates line breaks.
+        const poems = {
+            poem1: {
+                title: "500 days of autumn",
+                text: `It's infectious.\nYou.\nMe.\n\nThe idea of you and me...\n\nIt's surreal. But then again, was it ever not?\n\nWe're worlds apart, yet your presence is ever so apparent...\n\nMy innocent naive self presumed understanding you would be similar to reading a book... But this everlasting book unravels so many chapters im in awe of.. never ever wanting it to end.\n\n"I wish you'd see yourself the way I see you"\n\nThis is what echoes through my zen whenever you be little yourself... Too bright a star to let down.\n\na celestial being too pure to stoop down to where I live. That's you, an empress of hope and life itself\n\nAnd here I am, a shepherd of my own ambitions leading the blind, being led by the blind into eternity... Wishing the sight of the end of the tunnel...\n\n"We're worlds apart, yet your presence is ever so apparent..."\n\nEscapism is my only solution and yet that's all I'm incapable off. Never was fair, probably never will be.\n\nYet there you are.\nYou are my escape.\nYou are my blue moon.\n\nSo bright, so beautiful, so graceful...\n\nThe path I walk in is my fate. It's never ending. It's your light that stops me on my track and luminates what lies ahead.\n\nIt's heaven and earth that stands between us yet you reach out your hand...\n\n"The empress of hope and life"\n\nI long for the day we're equals.. so insignificant the world wouldn't budge an eye for a second. Our existence so mundane that it feels fair...\n\nIt feels peaceful...\n\nI long for that day...\n\nWould you take me in your arms and love me once again if I meet you elsewhere? An alternate reality?\n\nSomewhere so far the world wouldn't care?\nSometime so different the world wouldn't care?\n\nHope is all I've ever learnt from you yet it's something that makes me more miserable when I have it.\n\n"A bridge of countless birds form once a year ... Where the empress and the shepherd... The celestial being and the mortal reunite to embrace themselves and their love for one single night that embarks the start of the new year, a year apart till they meet the next time"\n\nIs it a mirage? Is it hope?\nI never seem to know.\n\nIt's you.\nThat's all I could ever care for.\nBut...\n\nThe bridge collapses someday or the other...\nThe one night i longed for ... Ends eventually...\nThe la la land I've dreamt of... Crumbles eventually...\n\nThe path I fortake is needy, is pushy, is relentless...\n\nThe shepherd that you've healed... The child that you nurtured... Is forced on that treacherous path again.\n\nBut then again ... I look for my escapism...\nI look for that one night when I meet you.\n\n"You've gotta live through the summer to witness the first leaf of the autumn"\n\nWould you be ever so kind to be that leaf?\n\nThis time we're mortals, you and me...\nNothing holding us back.\n\n"An alternate timeline"\n\nWhen I meet you in that realm, I ask…\n\n“what's your name?”…\n\nAnd you say…\n\n"Hi, im Autumn"...`
+            },
+            poem2: {
+                title: "Vinland",
+                text: `"Far, far west of here. Across the great ocean, there is land named Vinland... A warm and fertile land, untouched by slave-raiders nor the flame of war. There, even you can live in peace. So come with us, Arneis. At Vinland we will build a country of peace"\n\nLetting go of something...\nTo call it an art would be defying.\n\nThe act of Letting go is nature itself.\n\nWheather or not one accepts this act is predominantly suppressed...\nWhy?\n\nThe law of nature, one may presume\n\nThe understanding of change as a concept is all but a push to one's psyche to move towards the horizon, unknown of what lies ahead...\n"Rebellion"\n\nWhat are we, as humans if we do not Rebel\nDefying existence of any and every concept even to the most miniscule is what we are...\nTo inquire, to be inquisitive...\nIt's nature for us, the law of humans...\n\nThe law of nature\nThe law of humans\n\n"An unstoppable force meets an immovable object"...\n\nAs rhetorical as this may sound, it's us who coined it\n\nDefiance against the act of suppression...\nSo undeniably and utterly futile, it's sad\n\nYet us.. we never seem to change...\n\n"We as a society never change in regards to the acceptance of CHANGE as a concept"\nThat's history now..\n\nThe two sides to a single coin are acceptance and defiance...\nIt rolls from time and again\nBut eventually... Nature prevails\n\nAll events that ever occurred in the history of time are all but instances of life, us, everything. And ever so slowly but surely... All we can do is move on.\n\n"A country of hope..."\n\nThe more one thinks about it, the more prevalent it becomes that's it's all but a concept..\nA space where all there is are new beginnings and no trace of history.\nIt's a pipe dream, never to occur ...\n\nBut as foolish and optimistic we humans are... Even if all we can cling on to is "hope"\nWe do it\n\n"The law of humans"...\n\nIt's in our very dna to rebel, knowing completely well that it's all in vain...\nThat is why, it's an "art"\n\nIt's the path to acceptance of making peace with oneself... The only path that is... A long...long path.\n\nAs admirable as it may seem, the reality is often has the bigger stick of the bunch. And of all the choice one has left, all one does is...\nLetting go of something...\n\n"Far off to the west, across the great ocean...\nThere is a land... Named Vinland"`
+            },
+            poem3: {
+                title: "I'm lucky to love you",
+                text: `An element in my life which began as a thought,
+Later turned into a certainty, Later turned into an ask
+
+An ask for what you say?
+The right to be Lucky enough..
+
+It's an ask not for the love, but for the right
+"because it's you...”
+"before I got to be the lucky one"
+"before I got to be the worthy one"
+"it's always been you..."
+"before I got to love you"
+"before I got to know you"
+
+I wanted to be believe it's a miracle that I got to know you
+It's a funny feeling when I embarked upon in the realization that...
+A peculiar yet beautiful feeling About when I might think that..."I'm not the worthy to be the one… but I desire to be the lucky one”
+
+"it's a possibility..."
+"who knows what the one has to offer"
+
+Pondering to no extent, I ask myself "why"…”why do I desire to be the lucky one"
+And at the end of it, I think of nothing but rather a simple thought..
+It's a rush of emotions tangling around one's heart even before the first thought after glaring at your beautiful soul being "is she the one..."
+"will I get to be her one..."
+
+It's an introspective thought wrapped around a box full impeccable emotions which might might as well burst out at any given moment and just shout it all away saying...
+"I'm lucky to love you…”`
+            },
+            poem4: {
+                title: "A tiny happenstance",
+                text: `Rain pouring down to it's heart's content on a rather mundane morning, pondering about what the day has to offer,
+when I found you…
+
+The minute you were a part of my life I knew it wouldn't ever be the same..
+Or more in the words of, I never wanted it to be the same…
+
+Why would it never be the same you ask?
+To this day even I do…
+
+“to see a smile you'd have protected,
+And to see a smile you'd have earned”…
+
+“It's a perspective”
+Always has been…
+Difference unknown to some, and to the one who know…
+“It's a gift”…
+
+Seeing you smile makes me feel ways I would've have never expected not did I ever ask for but will always be grateful for…
+Something I wanted to protect from the ones beyond our bubble of happiness…
+But soon enough I realized
+“it's a gift”…
+
+Not just for me
+But for anyone and everyone your beautiful soul glared upon…
+
+Talking to you is a symphony of emotions which I would give anything for
+It might as well be a mere ask for you but it's something I hold immensely dear to my heart
+
+“it's just an ask”…
+“for?”
+“to embark a journey without an end”…
+“to be with you beyond our time's extent”…
+
+“Maybe not to love you,
+But just to be with you…
+It's all I can ever ask for“
+
+It's a selfish ask one might say
+It is…
+A person in love never thinks about where their love might go, to what extent..
+Where it might lead them..
+It's unconditional
+“always”
+
+Never altered, never quantified
+“It just is”…
+
+Might as well not be received well, but…
+“it just is”…
+
+It's suppressed, it's forgotten, it's moved on over and over…
+But never gone…
+
+“if it doesn't have a end, it never had an origin”…
+Right?
+
+The peculiar thing about love is..
+In all these chaos,
+“it's an exception”…
+
+A parasite to what you ever thought about yourself, which will indefinitely and undoubtedly be changed in moment untold…
+“why?”
+Cause…
+“it's an exception”…
+
+An emotion that defies scientific laws and human understanding…a strong feel to the gut of realization that there is something you can never live without…or more like you never wanna live without…
+
+That's love for me…
+Getting to talk to you…
+“I learned to smile”
+
+Getting to be with you…
+“I learned to live”
+
+Getting to know you…
+“I learned to love”
+
+When I think about love…
+I think about your soul
+I think about your smile
+I think about you…
+
+“I'm in love with you”
+It's an understatement to what I feel towards you and always will be…
+
+“Rain pouring down to it's heart's content on a rather mundane morning, pondering about what the day has to offer,
+when I found you…”
+
+A day Id rather not forget…
+For as long as I have the capability to remember, I will remember you…
+
+To be alive and to live is a rather simple difference…
+Thanks for teaching it to me..
+
+Sometimes the thing you seek for the most, never gets you…
+But also, sometimes the most unexpected of moments can turn your life around from “ just a period of time “ to “ a series of experiences “
+
+“when will that moment arrive?”
+You never know…
+You have to be patient…
+Sometimes you have to believe..
+“why?”
+Well, you never know..
+Life’s cruelly beautiful…
+
+Sometimes the root of all your happiness might end up being…
+“A tiny happenstance”…`
+            },
+            poem5: {
+                title: "A mist of lucidity",
+                text: `“to all there exists a beginning and an end..”
+Says who?
+
+To the misery one never saw coming up along…
+The path one ends up on one after the other…
+More like, the path one was always on…
+The path one never seems to route out…
+
+Was there ever a beginning to this?
+Will there ever be an end to this?
+Known to none…
+
+“Inquisitivity”
+Works wonders right?
+The seed to what we are…
+
+One's tendancy to dive into the unknown by turning a blind eye to the rest of the bubble…
+That's inquisitivity… the culprit to one's psyche
+The culprit that leads on towards the path of misery…
+A double edged sword…
+
+“One is but a hollow void”
+It's our tendencies that ceases the nullity within the void…
+The connections one makes along that atrocious yet beautiful path is the only motive…
+
+The concept of misery and pessimistic outlook is not everyone’s cup of tea…
+“it's paradoxical”
+“it's a inane”
+“it's an anomaly to what we are”
+
+Again…
+Says who?
+
+Contradictions over the outlook of these will bask for as long as time ceases to exit…
+But at the very end of at all, that's all there is left to be, dispite it all
+“that's misery”
+
+“the fear of the loneliness”
+The key to it all..
+The catalyst to the void which fuels the embarking of connections…
+
+That's all there is
+That's all there ever will be
+
+Our inate will to reciprocate and pass on the experiences to the other voids is what makes us what we are…
+Our world is nothing but an accumulation of empty souls pinning our hopes on the other to see the end of the day…
+
+“hope”
+It's a mirage until one capable enough to see the end of it…
+A mirage of self conceit…
+
+Hope gives us a reason to continue on the grueling path whilst butchering what could've been the end of it all…
+The end of the misery…
+
+At the break of the eleventh hour, when one needs the answers to their existence, answers for the suffering…
+One meets the dilemma that…
+“they don't exist”
+
+One's origin..
+One's demise..
+Those were the pieces to a the most gruesome puzzle called “life”…
+But they never existed did they?
+
+After seperating the facts from the fiction, one’s desire to route out from the path on their own becomes prominent..
+Climbing the stairs of hopelessness, journeying to apex of of it all, having betrayed all that ever was…
+“one takes a leap of faith”
+The faith to embrace the oblivion…
+
+“to be or not to be”…
+“that is the question”…
+
+Existence of it so miniscule, one might as well leave the path for good
+“but would that really change anything?”
+
+The norms wouldn't budge for a being so trivial, so when was being a part of them ever so good?
+Pondering of it all to no extent, one concludes to walk on the path, carrying a bag pack of hopeless dreams, eyeing the edge of the world…
+
+At the break of dawn, feeling how one always felt…having realised a rather simple thought as the cog of a big machine…
+Which is …
+All I ever was in is…
+“A mist of lucidity”`
+            }
+        };
+
+        // --- SCRIPT LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainTitle = document.getElementById('main-title');
+            const poemList = document.getElementById('poem-list');
+            const poemModal = document.getElementById('poem-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalContent = document.querySelector('.modal-content'); // Get the scrollable element
+
+            // 1. Show the list of poems when the main title is clicked
+            mainTitle.addEventListener('click', () => {
+                poemList.classList.toggle('visible');
+            });
+
+            // 2. Open the modal when a poem title is clicked
+            poemList.addEventListener('click', (event) => {
+                if (event.target.tagName === 'LI') {
+                    const poemKey = event.target.getAttribute('data-poem');
+                    const poem = poems[poemKey];
+                    
+                    if (poem) {
+                        modalTitle.textContent = poem.title;
+                        modalBody.textContent = poem.text;
+                        modalContent.scrollTop = 0; // Reset scroll position to the top
+                        poemModal.classList.add('visible');
+                    }
+                }
+            });
+
+            // 3. Close the modal
+            const closeModal = () => {
+                poemModal.classList.remove('visible');
+            };
+
+            // Also close modal if clicking on the background
+            poemModal.addEventListener('click', (event) => {
+                if (event.target === poemModal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
+
+
