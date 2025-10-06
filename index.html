@@ -28,10 +28,8 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html {
             height: 100%;
-            width: 100%;
-            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         body {
@@ -43,6 +41,9 @@
             align-items: center;
             text-align: center;
             padding: 1rem;
+            width: 100%;
+            min-height: 100vh; /* Ensures full viewport height for vertical centering on mobile */
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
         
         /* * ----------------------------------------
@@ -185,8 +186,6 @@
 
     <script>
         // --- POEM CONTENT ---
-        // You can replace these with your actual poems.
-        // The `\n` creates line breaks.
         const poems = {
             poem1: {
                 title: "500 days of autumn",
@@ -430,7 +429,7 @@ All I ever was in is…
             const poemModal = document.getElementById('poem-modal');
             const modalTitle = document.getElementById('modal-title');
             const modalBody = document.getElementById('modal-body');
-            const modalContent = document.querySelector('.modal-content'); // Get the scrollable element
+            const modalContent = document.querySelector('.modal-content');
 
             // 1. Show the list of poems when the main title is clicked
             mainTitle.addEventListener('click', () => {
@@ -457,16 +456,19 @@ All I ever was in is…
                 poemModal.classList.remove('visible');
             };
 
-            // Also close modal if clicking on the background
-            poemModal.addEventListener('click', (event) => {
+            // Handler for closing the modal on desktop (click) or mobile (touchstart)
+            const closeHandler = (event) => {
+                // We only want to close if the direct background is tapped, not the content inside.
                 if (event.target === poemModal) {
                     closeModal();
                 }
-            });
+            };
+
+            poemModal.addEventListener('click', closeHandler);
+            poemModal.addEventListener('touchstart', closeHandler);
         });
     </script>
     
 </body>
 </html>
-
 
