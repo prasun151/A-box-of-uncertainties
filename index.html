@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Box of Uncertainties</title>
     
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+
     <!-- Google Fonts: Roboto Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,8 +135,11 @@
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            text-align: left;
             position: relative;
+             /* --- FIX FOR CENTERING --- */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             /* Hide scrollbar for a cleaner look but allow scrolling */
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
@@ -313,7 +319,7 @@ I think about you…
 “I'm in love with you”
 It's an understatement to what I feel towards you and always will be…
 
-“Rain pouring down to it's heart's content on a rather mundane morning, pondering about what the day has to offer,
+“Rain pouring down to it's heart's content on on a rather mundane morning, pondering about what the day has to offer,
 when I found you…”
 
 A day Id rather not forget…
